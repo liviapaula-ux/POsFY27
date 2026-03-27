@@ -1,0 +1,2104 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard POs - Abril/26 a Março/27</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f5f5f5;
+            border-bottom: 2px solid #ddd;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tab:hover {
+            background: #e0e0e0;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+        
+        .card .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-transform: uppercase;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .checkbox-cell {
+            text-align: center;
+            width: 80px;
+        }
+        
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .aprovado {
+            background: #d4edda !important;
+        }
+        
+        .mensal-badge {
+            background: #28a745;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .anual-badge {
+            background: #007bff;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .tipo-badge {
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .repasse {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .custo-empresa {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .valor {
+            font-weight: 600;
+            color: #28a745;
+        }
+        
+        .reajuste-info {
+            font-size: 0.85em;
+            color: #666;
+        }
+        
+        .total-row {
+            background: #667eea !important;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .total-row:hover {
+            background: #5568d3 !important;
+        }
+        
+        .filter-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-section label {
+            margin-right: 15px;
+            font-weight: 500;
+        }
+        
+        .filter-section input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            width: 250px;
+        }
+        
+        .cnpj-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .small-text {
+            font-size: 0.85em;
+            color: #666;
+        }
+        
+        .monthly-table {
+            font-size: 0.85em;
+        }
+        
+        .monthly-table th {
+            padding: 10px 8px;
+        }
+        
+        .monthly-table td {
+            padding: 8px;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .tabs {
+                display: none;
+            }
+            .tab-content {
+                display: block !important;
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Dashboard de POs</h1>
+            <p>Projeção Fiscal: Abril/2026 - Março/2027</p>
+        </div>
+        
+        <div class="tabs" id="tabs">
+            <button class="tab active" onclick="showTab('consolidado')">📈 Visão Consolidada</button>
+            <button class="tab" onclick="showTab('mensal')">📅 POs Mensais (Não Fiscal)</button>
+            <button class="tab" onclick="showTab('anual')">📋 POs Anuais (Fiscal)</button>
+        </div>
+        
+        <div id="consolidado" class="tab-content active">
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Total Geral</h3>
+                    <div class="value" id="total-geral">R$ 0,00</div>
+                </div>
+                <div class="card">
+                    <h3>POs Mensais (Não Fiscal)</h3>
+                    <div class="value" id="total-mensal">R$ 0,00</div>
+                </div>
+                <div class="card">
+                    <h3>POs Anuais (Fiscal)</h3>
+                    <div class="value" id="total-anual">R$ 0,00</div>
+                </div>
+                <div class="card">
+                    <h3>Total Aprovado</h3>
+                    <div class="value" id="total-aprovado">R$ 0,00</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Resumo Consolidado por Fornecedor</h2>
+                <div class="filter-section">
+                    <label>🔍 Filtrar:</label>
+                    <input type="text" id="search-consolidado" placeholder="Digite o nome do fornecedor..." onkeyup="filterTable('consolidado')">
+                </div>
+                <table id="table-consolidado">
+                    <thead>
+                        <tr>
+                            <th>✓</th>
+                            <th>Fornecedor</th>
+                            <th>Tipo PO</th>
+                            <th>Tipo</th>
+                            <th>CNPJs</th>
+                            <th>Total Anual</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-consolidado">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="mensal" class="tab-content">
+            <div class="section">
+                <h2>📅 POs Mensais - Pagamentos Não Fiscais</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Estas POs devem ser abertas mensalmente. Os valores incluem os reajustes programados.
+                </p>
+                <div class="filter-section">
+                    <label>🔍 Filtrar:</label>
+                    <input type="text" id="search-mensal" placeholder="Digite o fornecedor ou benefício..." onkeyup="filterTable('mensal')">
+                </div>
+                <div id="content-mensal"></div>
+            </div>
+        </div>
+        
+        <div id="anual" class="tab-content">
+            <div class="section">
+                <h2>📋 POs Anuais - Pagamentos Fiscais</h2>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Estas POs devem ser abertas uma única vez com o valor anual total (compras centralizadas e automatizadas).
+                </p>
+                <div class="filter-section">
+                    <label>🔍 Filtrar:</label>
+                    <input type="text" id="search-anual" placeholder="Digite o fornecedor ou benefício..." onkeyup="filterTable('anual')">
+                </div>
+                <table id="table-anual">
+                    <thead>
+                        <tr>
+                            <th>✓</th>
+                            <th>CNPJ</th>
+                            <th>Fornecedor</th>
+                            <th>Benefício</th>
+                            <th>Tipo</th>
+                            <th>Valor Anual</th>
+                            <th>Reajuste</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody-anual">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const dados = [
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ACADEMIA",
+    "fornecedor": "Wellhub",
+    "tipo": "Repasse $",
+    "valores_mensais": {
+      "2026-04": 27960.0,
+      "2026-05": 27960.0,
+      "2026-06": 27960.0,
+      "2026-07": 27960.0,
+      "2026-08": 27960.0,
+      "2026-09": 27960.0,
+      "2026-10": 27960.0,
+      "2026-11": 27960.0,
+      "2026-12": 29358.0,
+      "2027-01": 29358.0,
+      "2027-02": 29358.0,
+      "2027-03": 29358.0
+    },
+    "total_anual": 341112.0,
+    "reajuste": 0.05,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ACADEMIA",
+    "fornecedor": "Wellhub",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 772.0,
+      "2026-05": 772.0,
+      "2026-06": 772.0,
+      "2026-07": 772.0,
+      "2026-08": 772.0,
+      "2026-09": 772.0,
+      "2026-10": 772.0,
+      "2026-11": 772.0,
+      "2026-12": 810.6,
+      "2027-01": 810.6,
+      "2027-02": 810.6,
+      "2027-03": 810.6
+    },
+    "total_anual": 9418.4,
+    "reajuste": 0.05,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ACADEMIA",
+    "fornecedor": "Wellhub",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 240.0,
+      "2026-05": 240.0,
+      "2026-06": 240.0,
+      "2026-07": 240.0,
+      "2026-08": 240.0,
+      "2026-09": 240.0,
+      "2026-10": 240.0,
+      "2026-11": 240.0,
+      "2026-12": 252.0,
+      "2027-01": 252.0,
+      "2027-02": 252.0,
+      "2027-03": 252.0
+    },
+    "total_anual": 2928.0,
+    "reajuste": 0.05,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ACADEMIA",
+    "fornecedor": "Wellhub",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 108.0,
+      "2026-05": 108.0,
+      "2026-06": 108.0,
+      "2026-07": 108.0,
+      "2026-08": 108.0,
+      "2026-09": 108.0,
+      "2026-10": 108.0,
+      "2026-11": 108.0,
+      "2026-12": 113.4,
+      "2027-01": 113.4,
+      "2027-02": 113.4,
+      "2027-03": 113.4
+    },
+    "total_anual": 1317.6,
+    "reajuste": 0.05,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ACADEMIA",
+    "fornecedor": "Wellhub",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 180.0,
+      "2026-05": 180.0,
+      "2026-06": 180.0,
+      "2026-07": 180.0,
+      "2026-08": 180.0,
+      "2026-09": 180.0,
+      "2026-10": 180.0,
+      "2026-11": 180.0,
+      "2026-12": 189.0,
+      "2027-01": 189.0,
+      "2027-02": 189.0,
+      "2027-03": 189.0
+    },
+    "total_anual": 2196.0,
+    "reajuste": 0.05,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "MEDICAMENTOS",
+    "fornecedor": "Vida Link",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 40192.5,
+      "2026-05": 40192.5,
+      "2026-06": 40192.5,
+      "2026-07": 40192.5,
+      "2026-08": 40192.5,
+      "2026-09": 40192.5,
+      "2026-10": 40192.5,
+      "2026-11": 40192.5,
+      "2026-12": 43005.975000000006,
+      "2027-01": 43005.975000000006,
+      "2027-02": 43005.975000000006,
+      "2027-03": 43005.975000000006
+    },
+    "total_anual": 493563.9,
+    "reajuste": 0.07,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "MEDICAMENTOS",
+    "fornecedor": "Vida Link",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 1109.75,
+      "2026-05": 1109.75,
+      "2026-06": 1109.75,
+      "2026-07": 1109.75,
+      "2026-08": 1109.75,
+      "2026-09": 1109.75,
+      "2026-10": 1109.75,
+      "2026-11": 1109.75,
+      "2026-12": 1187.4325000000001,
+      "2027-01": 1187.4325000000001,
+      "2027-02": 1187.4325000000001,
+      "2027-03": 1187.4325000000001
+    },
+    "total_anual": 13627.73,
+    "reajuste": 0.07,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "MEDICAMENTOS",
+    "fornecedor": "Vida Link",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 345.0,
+      "2026-05": 345.0,
+      "2026-06": 345.0,
+      "2026-07": 345.0,
+      "2026-08": 345.0,
+      "2026-09": 345.0,
+      "2026-10": 345.0,
+      "2026-11": 345.0,
+      "2026-12": 369.15000000000003,
+      "2027-01": 369.15000000000003,
+      "2027-02": 369.15000000000003,
+      "2027-03": 369.15000000000003
+    },
+    "total_anual": 4236.6,
+    "reajuste": 0.07,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "MEDICAMENTOS",
+    "fornecedor": "Vida Link",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 155.25,
+      "2026-05": 155.25,
+      "2026-06": 155.25,
+      "2026-07": 155.25,
+      "2026-08": 155.25,
+      "2026-09": 155.25,
+      "2026-10": 155.25,
+      "2026-11": 155.25,
+      "2026-12": 166.1175,
+      "2027-01": 166.1175,
+      "2027-02": 166.1175,
+      "2027-03": 166.1175
+    },
+    "total_anual": 1906.47,
+    "reajuste": 0.07,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "MEDICAMENTOS",
+    "fornecedor": "Vida Link",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 258.75,
+      "2026-05": 258.75,
+      "2026-06": 258.75,
+      "2026-07": 258.75,
+      "2026-08": 258.75,
+      "2026-09": 258.75,
+      "2026-10": 258.75,
+      "2026-11": 258.75,
+      "2026-12": 276.8625,
+      "2027-01": 276.8625,
+      "2027-02": 276.8625,
+      "2027-03": 276.8625
+    },
+    "total_anual": 3177.45,
+    "reajuste": 0.07,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ODONTO",
+    "fornecedor": "Bradesco Odonto",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 222532.85,
+      "2026-05": 249236.79200000002,
+      "2026-06": 249236.79200000002,
+      "2026-07": 249236.79200000002,
+      "2026-08": 249236.79200000002,
+      "2026-09": 249236.79200000002,
+      "2026-10": 249236.79200000002,
+      "2026-11": 249236.79200000002,
+      "2026-12": 249236.79200000002,
+      "2027-01": 249236.79200000002,
+      "2027-02": 249236.79200000002,
+      "2027-03": 249236.79200000002
+    },
+    "total_anual": 2964137.5620000004,
+    "reajuste": 0.12,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ODONTO",
+    "fornecedor": "Bradesco Odonto",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 6551.59,
+      "2026-05": 7337.7808,
+      "2026-06": 7337.7808,
+      "2026-07": 7337.7808,
+      "2026-08": 7337.7808,
+      "2026-09": 7337.7808,
+      "2026-10": 7337.7808,
+      "2026-11": 7337.7808,
+      "2026-12": 7337.7808,
+      "2027-01": 7337.7808,
+      "2027-02": 7337.7808,
+      "2027-03": 7337.7808
+    },
+    "total_anual": 87267.17880000001,
+    "reajuste": 0.12,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ODONTO",
+    "fornecedor": "Bradesco Odonto",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 1452.28,
+      "2026-05": 1626.5536000000002,
+      "2026-06": 1626.5536000000002,
+      "2026-07": 1626.5536000000002,
+      "2026-08": 1626.5536000000002,
+      "2026-09": 1626.5536000000002,
+      "2026-10": 1626.5536000000002,
+      "2026-11": 1626.5536000000002,
+      "2026-12": 1626.5536000000002,
+      "2027-01": 1626.5536000000002,
+      "2027-02": 1626.5536000000002,
+      "2027-03": 1626.5536000000002
+    },
+    "total_anual": 19344.3696,
+    "reajuste": 0.12,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ODONTO",
+    "fornecedor": "Bradesco Odonto",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 901.51,
+      "2026-05": 1009.6912000000001,
+      "2026-06": 1009.6912000000001,
+      "2026-07": 1009.6912000000001,
+      "2026-08": 1009.6912000000001,
+      "2026-09": 1009.6912000000001,
+      "2026-10": 1009.6912000000001,
+      "2026-11": 1009.6912000000001,
+      "2026-12": 1009.6912000000001,
+      "2027-01": 1009.6912000000001,
+      "2027-02": 1009.6912000000001,
+      "2027-03": 1009.6912000000001
+    },
+    "total_anual": 12008.113200000002,
+    "reajuste": 0.12,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "ODONTO",
+    "fornecedor": "Bradesco Odonto",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 1434.95,
+      "2026-05": 1607.1440000000002,
+      "2026-06": 1607.1440000000002,
+      "2026-07": 1607.1440000000002,
+      "2026-08": 1607.1440000000002,
+      "2026-09": 1607.1440000000002,
+      "2026-10": 1607.1440000000002,
+      "2026-11": 1607.1440000000002,
+      "2026-12": 1607.1440000000002,
+      "2027-01": 1607.1440000000002,
+      "2027-02": 1607.1440000000002,
+      "2027-03": 1607.1440000000002
+    },
+    "total_anual": 19113.534000000003,
+    "reajuste": 0.12,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Bradesco",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 10399861.72,
+      "2026-05": 12167838.2124,
+      "2026-06": 12167838.2124,
+      "2026-07": 12167838.2124,
+      "2026-08": 12167838.2124,
+      "2026-09": 12167838.2124,
+      "2026-10": 12167838.2124,
+      "2026-11": 12167838.2124,
+      "2026-12": 12167838.2124,
+      "2027-01": 12167838.2124,
+      "2027-02": 12167838.2124,
+      "2027-03": 12167838.2124
+    },
+    "total_anual": 144246082.0564,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Bradesco",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 504047.98,
+      "2026-05": 589736.1366,
+      "2026-06": 589736.1366,
+      "2026-07": 589736.1366,
+      "2026-08": 589736.1366,
+      "2026-09": 589736.1366,
+      "2026-10": 589736.1366,
+      "2026-11": 589736.1366,
+      "2026-12": 589736.1366,
+      "2027-01": 589736.1366,
+      "2027-02": 589736.1366,
+      "2027-03": 589736.1366
+    },
+    "total_anual": 6991145.4826,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Bradesco",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 53603.12,
+      "2026-05": 62715.6504,
+      "2026-06": 62715.6504,
+      "2026-07": 62715.6504,
+      "2026-08": 62715.6504,
+      "2026-09": 62715.6504,
+      "2026-10": 62715.6504,
+      "2026-11": 62715.6504,
+      "2026-12": 62715.6504,
+      "2027-01": 62715.6504,
+      "2027-02": 62715.6504,
+      "2027-03": 62715.6504
+    },
+    "total_anual": 743475.2744,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Bradesco",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 38794.3,
+      "2026-05": 45389.331,
+      "2026-06": 45389.331,
+      "2026-07": 45389.331,
+      "2026-08": 45389.331,
+      "2026-09": 45389.331,
+      "2026-10": 45389.331,
+      "2026-11": 45389.331,
+      "2026-12": 45389.331,
+      "2027-01": 45389.331,
+      "2027-02": 45389.331,
+      "2027-03": 45389.331
+    },
+    "total_anual": 538076.941,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Bradesco",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 73419.17,
+      "2026-05": 85900.4289,
+      "2026-06": 85900.4289,
+      "2026-07": 85900.4289,
+      "2026-08": 85900.4289,
+      "2026-09": 85900.4289,
+      "2026-10": 85900.4289,
+      "2026-11": 85900.4289,
+      "2026-12": 85900.4289,
+      "2027-01": 85900.4289,
+      "2027-02": 85900.4289,
+      "2027-03": 85900.4289
+    },
+    "total_anual": 1018323.8879,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "REEMBOLSO FLEX",
+    "fornecedor": "iFood",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 38926.0,
+      "2026-05": 38926.0,
+      "2026-06": 38926.0,
+      "2026-07": 38926.0,
+      "2026-08": 38926.0,
+      "2026-09": 38926.0,
+      "2026-10": 38926.0,
+      "2026-11": 38926.0,
+      "2026-12": 38926.0,
+      "2027-01": 38926.0,
+      "2027-02": 38926.0,
+      "2027-03": 38926.0
+    },
+    "total_anual": 467112.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "REEMBOLSO FLEX",
+    "fornecedor": "iFood",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 1633.0,
+      "2026-05": 1633.0,
+      "2026-06": 1633.0,
+      "2026-07": 1633.0,
+      "2026-08": 1633.0,
+      "2026-09": 1633.0,
+      "2026-10": 1633.0,
+      "2026-11": 1633.0,
+      "2026-12": 1633.0,
+      "2027-01": 1633.0,
+      "2027-02": 1633.0,
+      "2027-03": 1633.0
+    },
+    "total_anual": 19596.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "REEMBOLSO FLEX",
+    "fornecedor": "iFood",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 320.0,
+      "2026-05": 320.0,
+      "2026-06": 320.0,
+      "2026-07": 320.0,
+      "2026-08": 320.0,
+      "2026-09": 320.0,
+      "2026-10": 320.0,
+      "2026-11": 320.0,
+      "2026-12": 320.0,
+      "2027-01": 320.0,
+      "2027-02": 320.0,
+      "2027-03": 320.0
+    },
+    "total_anual": 3840.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "REEMBOLSO FLEX",
+    "fornecedor": "iFood",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 323.0,
+      "2026-05": 323.0,
+      "2026-06": 323.0,
+      "2026-07": 323.0,
+      "2026-08": 323.0,
+      "2026-09": 323.0,
+      "2026-10": 323.0,
+      "2026-11": 323.0,
+      "2026-12": 323.0,
+      "2027-01": 323.0,
+      "2027-02": 323.0,
+      "2027-03": 323.0
+    },
+    "total_anual": 3876.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "SEGURO DE VIDA",
+    "fornecedor": "Zurich",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 155342.0,
+      "2026-05": 161555.68,
+      "2026-06": 161555.68,
+      "2026-07": 161555.68,
+      "2026-08": 161555.68,
+      "2026-09": 161555.68,
+      "2026-10": 161555.68,
+      "2026-11": 161555.68,
+      "2026-12": 161555.68,
+      "2027-01": 161555.68,
+      "2027-02": 161555.68,
+      "2027-03": 161555.68
+    },
+    "total_anual": 1932454.48,
+    "reajuste": 0.04,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "SEGURO DE VIDA",
+    "fornecedor": "Zurich",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 6658.61,
+      "2026-05": 6924.9544,
+      "2026-06": 6924.9544,
+      "2026-07": 6924.9544,
+      "2026-08": 6924.9544,
+      "2026-09": 6924.9544,
+      "2026-10": 6924.9544,
+      "2026-11": 6924.9544,
+      "2026-12": 6924.9544,
+      "2027-01": 6924.9544,
+      "2027-02": 6924.9544,
+      "2027-03": 6924.9544
+    },
+    "total_anual": 82833.1084,
+    "reajuste": 0.04,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "SEGURO DE VIDA",
+    "fornecedor": "Zurich",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 1144.78,
+      "2026-05": 1190.5712,
+      "2026-06": 1190.5712,
+      "2026-07": 1190.5712,
+      "2026-08": 1190.5712,
+      "2026-09": 1190.5712,
+      "2026-10": 1190.5712,
+      "2026-11": 1190.5712,
+      "2026-12": 1190.5712,
+      "2027-01": 1190.5712,
+      "2027-02": 1190.5712,
+      "2027-03": 1190.5712
+    },
+    "total_anual": 14241.0632,
+    "reajuste": 0.04,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "SEGURO DE VIDA",
+    "fornecedor": "Zurich",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 389.82,
+      "2026-05": 405.4128,
+      "2026-06": 405.4128,
+      "2026-07": 405.4128,
+      "2026-08": 405.4128,
+      "2026-09": 405.4128,
+      "2026-10": 405.4128,
+      "2026-11": 405.4128,
+      "2026-12": 405.4128,
+      "2027-01": 405.4128,
+      "2027-02": 405.4128,
+      "2027-03": 405.4128
+    },
+    "total_anual": 4849.3608,
+    "reajuste": 0.04,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "SEGURO DE VIDA",
+    "fornecedor": "Zurich",
+    "tipo": "Custo empresa",
+    "valores_mensais": {
+      "2026-04": 389.82,
+      "2026-05": 405.4128,
+      "2026-06": 405.4128,
+      "2026-07": 405.4128,
+      "2026-08": 405.4128,
+      "2026-09": 405.4128,
+      "2026-10": 405.4128,
+      "2026-11": 405.4128,
+      "2026-12": 405.4128,
+      "2027-01": 405.4128,
+      "2027-02": 405.4128,
+      "2027-03": 405.4128
+    },
+    "total_anual": 4849.3608,
+    "reajuste": 0.04,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "VIAGEM",
+    "fornecedor": "Travel Cash",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 29495.0,
+      "2026-05": 29495.0,
+      "2026-06": 29495.0,
+      "2026-07": 29495.0,
+      "2026-08": 29495.0,
+      "2026-09": 29495.0,
+      "2026-10": 29495.0,
+      "2026-11": 29495.0,
+      "2026-12": 29495.0,
+      "2027-01": 29495.0,
+      "2027-02": 29495.0,
+      "2027-03": 29495.0
+    },
+    "total_anual": 353940.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "VIAGEM",
+    "fornecedor": "Travel Cash",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 20.0,
+      "2026-05": 20.0,
+      "2026-06": 20.0,
+      "2026-07": 20.0,
+      "2026-08": 20.0,
+      "2026-09": 20.0,
+      "2026-10": 20.0,
+      "2026-11": 20.0,
+      "2026-12": 20.0,
+      "2027-01": 20.0,
+      "2027-02": 20.0,
+      "2027-03": 20.0
+    },
+    "total_anual": 240.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "VIAGEM",
+    "fornecedor": "Travel Cash",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 20.0,
+      "2026-05": 20.0,
+      "2026-06": 20.0,
+      "2026-07": 20.0,
+      "2026-08": 20.0,
+      "2026-09": 20.0,
+      "2026-10": 20.0,
+      "2026-11": 20.0,
+      "2026-12": 20.0,
+      "2027-01": 20.0,
+      "2027-02": 20.0,
+      "2027-03": 20.0
+    },
+    "total_anual": 240.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "VIAGEM",
+    "fornecedor": "Travel Cash",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 50.0,
+      "2026-05": 50.0,
+      "2026-06": 50.0,
+      "2026-07": 50.0,
+      "2026-08": 50.0,
+      "2026-09": 50.0,
+      "2026-10": 50.0,
+      "2026-11": 50.0,
+      "2026-12": 50.0,
+      "2027-01": 50.0,
+      "2027-02": 50.0,
+      "2027-03": 50.0
+    },
+    "total_anual": 600.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Pagamento Não Fiscal",
+    "po_acumulada": "NÃO",
+    "beneficio": "VIAGEM",
+    "fornecedor": "Travel Cash",
+    "tipo": "Custo em pontos",
+    "valores_mensais": {
+      "2026-04": 20.0,
+      "2026-05": 20.0,
+      "2026-06": 20.0,
+      "2026-07": 20.0,
+      "2026-08": 20.0,
+      "2026-09": 20.0,
+      "2026-10": 20.0,
+      "2026-11": 20.0,
+      "2026-12": 20.0,
+      "2027-01": 20.0,
+      "2027-02": 20.0,
+      "2027-03": 20.0
+    },
+    "total_anual": 240.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "ACADEMIA - REPASSE",
+    "fornecedor": "Wellhub",
+    "tipo": "Custo empresa",
+    "valor_anual": 63000.0,
+    "total_anual": 63000.0,
+    "reajuste": 0.05,
+    "mes_reajuste": "12/2026"
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "AJUDA DE CUSTOS",
+    "fornecedor": "Ajuda de custo",
+    "tipo": "Custo empresa",
+    "valor_anual": 8388000.0,
+    "total_anual": 8388000.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "AJUDA DE CUSTOS",
+    "fornecedor": "Ajuda de custo",
+    "tipo": "Custo empresa",
+    "valor_anual": 231600.0,
+    "total_anual": 231600.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "AJUDA DE CUSTOS",
+    "fornecedor": "Ajuda de custo",
+    "tipo": "Custo empresa",
+    "valor_anual": 72000.0,
+    "total_anual": 72000.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "AJUDA DE CUSTOS",
+    "fornecedor": "Ajuda de custo",
+    "tipo": "Custo empresa",
+    "valor_anual": 32400.0,
+    "total_anual": 32400.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "AJUDA DE CUSTOS",
+    "fornecedor": "Ajuda de custo",
+    "tipo": "Custo empresa",
+    "valor_anual": 54000.0,
+    "total_anual": 54000.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CLUBE DE VANTAGENS",
+    "fornecedor": "New Value",
+    "tipo": "Custo empresa",
+    "valor_anual": 172725.69600000003,
+    "total_anual": 172725.69600000003,
+    "reajuste": 0.04,
+    "mes_reajuste": "09/2026"
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CLUBE DE VANTAGENS",
+    "fornecedor": "New Value",
+    "tipo": "Custo empresa",
+    "valor_anual": 4769.1072,
+    "total_anual": 4769.1072,
+    "reajuste": 0.04,
+    "mes_reajuste": "09/2026"
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CLUBE DE VANTAGENS",
+    "fornecedor": "New Value",
+    "tipo": "Custo empresa",
+    "valor_anual": 1482.624,
+    "total_anual": 1482.624,
+    "reajuste": 0.04,
+    "mes_reajuste": "09/2026"
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CLUBE DE VANTAGENS",
+    "fornecedor": "New Value",
+    "tipo": "Custo empresa",
+    "valor_anual": 667.1808,
+    "total_anual": 667.1808,
+    "reajuste": 0.04,
+    "mes_reajuste": "09/2026"
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CLUBE DE VANTAGENS",
+    "fornecedor": "New Value",
+    "tipo": "Custo empresa",
+    "valor_anual": 1111.9679999999998,
+    "total_anual": 1111.9679999999998,
+    "reajuste": 0.04,
+    "mes_reajuste": "09/2026"
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "COMPLEMENTO DE IDIOMAS",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 226824.0,
+    "total_anual": 226824.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "COMPLEMENTO DE IDIOMAS",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 16356.0,
+    "total_anual": 16356.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "COMPLEMENTO DE IDIOMAS",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 516.0,
+    "total_anual": 516.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "COMPLEMENTO DE IDIOMAS",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 6888.0,
+    "total_anual": 6888.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "COMPLEMENTO DE IDIOMAS",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 240.0,
+    "total_anual": 240.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CULTURA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 407400.0,
+    "total_anual": 407400.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CULTURA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 7800.0,
+    "total_anual": 7800.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CULTURA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 3600.0,
+    "total_anual": 3600.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CULTURA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 3000.0,
+    "total_anual": 3000.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "CULTURA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 3000.0,
+    "total_anual": 3000.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "FARMACIA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 279324.0,
+    "total_anual": 279324.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "FARMACIA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 5760.0,
+    "total_anual": 5760.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "FARMACIA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 1668.0,
+    "total_anual": 1668.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "FARMACIA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 240.0,
+    "total_anual": 240.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "FARMACIA",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 1200.0,
+    "total_anual": 1200.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "MOBILIDADE FLEX",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 2504592.0,
+    "total_anual": 2504592.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "MOBILIDADE FLEX",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 83280.0,
+    "total_anual": 83280.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "MOBILIDADE FLEX",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 31164.0,
+    "total_anual": 31164.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "MOBILIDADE FLEX",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 24300.0,
+    "total_anual": 24300.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "MOBILIDADE FLEX",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 18048.0,
+    "total_anual": 18048.0,
+    "reajuste": 0.0,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PET",
+    "fornecedor": "Meu Pet",
+    "tipo": "Custo em pontos",
+    "valor_anual": 678484.8,
+    "total_anual": 678484.8,
+    "reajuste": 0.06,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PET",
+    "fornecedor": "Meu Pet",
+    "tipo": "Custo em pontos",
+    "valor_anual": 27220.800000000003,
+    "total_anual": 27220.800000000003,
+    "reajuste": 0.06,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PET",
+    "fornecedor": "Meu Pet",
+    "tipo": "Custo em pontos",
+    "valor_anual": 2162.4,
+    "total_anual": 2162.4,
+    "reajuste": 0.06,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PET",
+    "fornecedor": "Meu Pet",
+    "tipo": "Custo em pontos",
+    "valor_anual": 4579.2,
+    "total_anual": 4579.2,
+    "reajuste": 0.06,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PET",
+    "fornecedor": "Meu Pet",
+    "tipo": "Custo em pontos",
+    "valor_anual": 4452.0,
+    "total_anual": 4452.0,
+    "reajuste": 0.06,
+    "mes_reajuste": ""
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Unimed",
+    "tipo": "Custo em pontos",
+    "valor_anual": 18235380.7116,
+    "total_anual": 18235380.7116,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Unimed",
+    "tipo": "Custo em pontos",
+    "valor_anual": 364571.62559999997,
+    "total_anual": 364571.62559999997,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Unimed",
+    "tipo": "Custo em pontos",
+    "valor_anual": 144163.84319999997,
+    "total_anual": 144163.84319999997,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Unimed",
+    "tipo": "Custo em pontos",
+    "valor_anual": 70623.02519999999,
+    "total_anual": 70623.02519999999,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Automatizada",
+    "po_acumulada": "SIM",
+    "beneficio": "PLANO DE SAÚDE",
+    "fornecedor": "Unimed",
+    "tipo": "Custo em pontos",
+    "valor_anual": 171545.7744,
+    "total_anual": 171545.7744,
+    "reajuste": 0.17,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "14.380.200/0000-00",
+    "tipo_pagamento": "Compra Centralizada",
+    "po_acumulada": "SIM",
+    "beneficio": "REFEICAO_ALIMENTACAO",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 125182862.4,
+    "total_anual": 125182862.4,
+    "reajuste": 0.06,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "19.468.200/0000-00",
+    "tipo_pagamento": "Compra Centralizada",
+    "po_acumulada": "SIM",
+    "beneficio": "REFEICAO_ALIMENTACAO",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 3684080.8800000004,
+    "total_anual": 3684080.8800000004,
+    "reajuste": 0.06,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "33.157.300/0000-00",
+    "tipo_pagamento": "Compra Centralizada",
+    "po_acumulada": "SIM",
+    "beneficio": "REFEICAO_ALIMENTACAO",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 1000300.8,
+    "total_anual": 1000300.8,
+    "reajuste": 0.06,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "46.368.200/0000-00",
+    "tipo_pagamento": "Compra Centralizada",
+    "po_acumulada": "SIM",
+    "beneficio": "REFEICAO_ALIMENTACAO",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 513760.80000000005,
+    "total_anual": 513760.80000000005,
+    "reajuste": 0.06,
+    "mes_reajuste": "05/2026"
+  },
+  {
+    "cnpj": "52.842.800/0000-00",
+    "tipo_pagamento": "Compra Centralizada",
+    "po_acumulada": "SIM",
+    "beneficio": "REFEICAO_ALIMENTACAO",
+    "fornecedor": "iFood Benefícios",
+    "tipo": "Custo em pontos",
+    "valor_anual": 709305.36,
+    "total_anual": 709305.36,
+    "reajuste": 0.06,
+    "mes_reajuste": "05/2026"
+  }
+];
+        const mesesLabels = ["Apr/26", "May/26", "Jun/26", "Jul/26", "Aug/26", "Sep/26", "Oct/26", "Nov/26", "Dec/26", "Jan/27", "Feb/27", "Mar/27"];
+        
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(value || 0);
+        }
+        
+        function formatPercent(value) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'percent',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(value || 0);
+        }
+        
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        function toggleApproval(checkbox, tipo, index) {
+            const row = checkbox.closest('tr');
+            if (checkbox.checked) {
+                row.classList.add('aprovado');
+            } else {
+                row.classList.remove('aprovado');
+            }
+            calculateTotals();
+            saveState();
+        }
+        
+        function calculateTotals() {
+            let totalGeral = 0;
+            let totalMensal = 0;
+            let totalAnual = 0;
+            let totalAprovado = 0;
+            
+            dados.forEach((item, index) => {
+                totalGeral += item.total_anual;
+                
+                if (item.po_acumulada === 'NÃO') {
+                    totalMensal += item.total_anual;
+                } else {
+                    totalAnual += item.total_anual;
+                }
+                
+                const checkbox = document.querySelector(`input[data-index="${index}"]`);
+                if (checkbox && checkbox.checked) {
+                    totalAprovado += item.total_anual;
+                }
+            });
+            
+            document.getElementById('total-geral').textContent = formatCurrency(totalGeral);
+            document.getElementById('total-mensal').textContent = formatCurrency(totalMensal);
+            document.getElementById('total-anual').textContent = formatCurrency(totalAnual);
+            document.getElementById('total-aprovado').textContent = formatCurrency(totalAprovado);
+        }
+        
+        function renderConsolidado() {
+            const tbody = document.getElementById('tbody-consolidado');
+            const consolidado = {};
+            
+            dados.forEach((item, index) => {
+                const fornecedor = item.fornecedor;
+                if (!consolidado[fornecedor]) {
+                    consolidado[fornecedor] = {
+                        po_acumulada: item.po_acumulada,
+                        tipo: item.tipo,
+                        cnpjs: new Set(),
+                        total: 0,
+                        indices: []
+                    };
+                }
+                consolidado[fornecedor].cnpjs.add(item.cnpj);
+                consolidado[fornecedor].total += item.total_anual;
+                consolidado[fornecedor].indices.push(index);
+            });
+            
+            let html = '';
+            Object.entries(consolidado).sort((a, b) => b[1].total - a[1].total).forEach(([fornecedor, data]) => {
+                const tipoBadge = data.po_acumulada === 'NÃO' ? 'mensal-badge' : 'anual-badge';
+                const tipoLabel = data.po_acumulada === 'NÃO' ? 'Mensal' : 'Anual';
+                const tipoClass = data.tipo === 'Repasse $' ? 'repasse' : 'custo-empresa';
+                
+                html += `
+                    <tr>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" onchange="toggleApprovalGroup(this, ${JSON.stringify(data.indices)})" 
+                                   data-group="${fornecedor}">
+                        </td>
+                        <td><strong>${fornecedor}</strong></td>
+                        <td><span class="${tipoBadge}">${tipoLabel}</span></td>
+                        <td><span class="tipo-badge ${tipoClass}">${data.tipo}</span></td>
+                        <td class="small-text">${Array.from(data.cnpjs).join(', ')}</td>
+                        <td class="valor">${formatCurrency(data.total)}</td>
+                    </tr>
+                `;
+            });
+            
+            const totalGeral = Object.values(consolidado).reduce((sum, data) => sum + data.total, 0);
+            html += `
+                <tr class="total-row">
+                    <td></td>
+                    <td colspan="4"><strong>TOTAL GERAL</strong></td>
+                    <td><strong>${formatCurrency(totalGeral)}</strong></td>
+                </tr>
+            `;
+            
+            tbody.innerHTML = html;
+        }
+        
+        function toggleApprovalGroup(checkbox, indices) {
+            indices.forEach(index => {
+                const itemCheckbox = document.querySelector(`input[data-index="${index}"]`);
+                if (itemCheckbox) {
+                    itemCheckbox.checked = checkbox.checked;
+                    toggleApproval(itemCheckbox, null, index);
+                }
+            });
+        }
+        
+        function renderMensal() {
+            const container = document.getElementById('content-mensal');
+            const cnpjs = {};
+            
+            dados.filter(item => item.po_acumulada === 'NÃO').forEach((item, index) => {
+                if (!cnpjs[item.cnpj]) {
+                    cnpjs[item.cnpj] = [];
+                }
+                cnpjs[item.cnpj].push({...item, originalIndex: index});
+            });
+            
+            let html = '';
+            Object.entries(cnpjs).forEach(([cnpj, items]) => {
+                html += `
+                    <div class="cnpj-title">
+                        <h3>CNPJ: ${cnpj}</h3>
+                        <p>Total de registros: ${items.length}</p>
+                    </div>
+                    <table class="monthly-table">
+                        <thead>
+                            <tr>
+                                <th>✓</th>
+                                <th>Fornecedor</th>
+                                <th>Benefício</th>
+                                <th>Tipo</th>
+                `;
+                
+                mesesLabels.forEach(mes => {
+                    html += `<th>${mes}</th>`;
+                });
+                
+                html += `
+                                <th>Total Anual</th>
+                                <th>Reajuste</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                let totalCnpj = 0;
+                const totaisMensais = new Array(12).fill(0);
+                
+                items.forEach(item => {
+                    const tipoClass = item.tipo === 'Repasse $' ? 'repasse' : 'custo-empresa';
+                    html += `
+                        <tr>
+                            <td class="checkbox-cell">
+                                <input type="checkbox" onchange="toggleApproval(this, 'mensal', ${item.originalIndex})" 
+                                       data-index="${item.originalIndex}">
+                            </td>
+                            <td>${item.fornecedor}</td>
+                            <td>${item.beneficio}</td>
+                            <td><span class="tipo-badge ${tipoClass}">${item.tipo}</span></td>
+                    `;
+                    
+                    Object.values(item.valores_mensais).forEach((valor, idx) => {
+                        html += `<td class="valor">${formatCurrency(valor)}</td>`;
+                        totaisMensais[idx] += valor;
+                    });
+                    
+                    html += `
+                            <td class="valor"><strong>${formatCurrency(item.total_anual)}</strong></td>
+                            <td class="reajuste-info">
+                                ${item.reajuste ? formatPercent(item.reajuste) + ' em ' + item.mes_reajuste : '-'}
+                            </td>
+                        </tr>
+                    `;
+                    totalCnpj += item.total_anual;
+                });
+                
+                html += `
+                        <tr class="total-row">
+                            <td></td>
+                            <td colspan="3"><strong>TOTAL ${cnpj}</strong></td>
+                `;
+                
+                totaisMensais.forEach(total => {
+                    html += `<td><strong>${formatCurrency(total)}</strong></td>`;
+                });
+                
+                html += `
+                            <td><strong>${formatCurrency(totalCnpj)}</strong></td>
+                            <td></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br><br>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        function renderAnual() {
+            const tbody = document.getElementById('tbody-anual');
+            const items = dados.filter(item => item.po_acumulada === 'SIM');
+            
+            let html = '';
+            let total = 0;
+            
+            items.forEach((item, idx) => {
+                const originalIndex = dados.indexOf(item);
+                const tipoClass = item.tipo === 'Repasse $' ? 'repasse' : 'custo-empresa';
+                
+                html += `
+                    <tr>
+                        <td class="checkbox-cell">
+                            <input type="checkbox" onchange="toggleApproval(this, 'anual', ${originalIndex})" 
+                                   data-index="${originalIndex}">
+                        </td>
+                        <td>${item.cnpj}</td>
+                        <td>${item.fornecedor}</td>
+                        <td>${item.beneficio}</td>
+                        <td><span class="tipo-badge ${tipoClass}">${item.tipo}</span></td>
+                        <td class="valor">${formatCurrency(item.valor_anual)}</td>
+                        <td class="reajuste-info">
+                            ${item.reajuste ? formatPercent(item.reajuste) + ' em ' + item.mes_reajuste : '-'}
+                        </td>
+                    </tr>
+                `;
+                total += item.valor_anual;
+            });
+            
+            html += `
+                <tr class="total-row">
+                    <td></td>
+                    <td colspan="4"><strong>TOTAL ANUAL</strong></td>
+                    <td><strong>${formatCurrency(total)}</strong></td>
+                    <td></td>
+                </tr>
+            `;
+            
+            tbody.innerHTML = html;
+        }
+        
+        function filterTable(section) {
+            const input = document.getElementById(`search-${section}`).value.toLowerCase();
+            let rows;
+            
+            if (section === 'consolidado') {
+                rows = document.querySelectorAll('#tbody-consolidado tr:not(.total-row)');
+            } else if (section === 'mensal') {
+                rows = document.querySelectorAll('#content-mensal table tbody tr:not(.total-row)');
+            } else {
+                rows = document.querySelectorAll('#tbody-anual tr:not(.total-row)');
+            }
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(input) ? '' : 'none';
+            });
+        }
+        
+        function saveState() {
+            const state = {};
+            document.querySelectorAll('input[type="checkbox"]').forEach((checkbox, index) => {
+                state[index] = checkbox.checked;
+            });
+            localStorage.setItem('po-dashboard-state', JSON.stringify(state));
+        }
+        
+        function loadState() {
+            const state = JSON.parse(localStorage.getItem('po-dashboard-state') || '{}');
+            Object.entries(state).forEach(([index, checked]) => {
+                const checkbox = document.querySelectorAll('input[type="checkbox"]')[index];
+                if (checkbox) {
+                    checkbox.checked = checked;
+                    if (checked) {
+                        checkbox.closest('tr').classList.add('aprovado');
+                    }
+                }
+            });
+            calculateTotals();
+        }
+        
+        // Inicializar
+        renderConsolidado();
+        renderMensal();
+        renderAnual();
+        calculateTotals();
+        setTimeout(loadState, 100);
+    </script>
+</body>
+</html>
